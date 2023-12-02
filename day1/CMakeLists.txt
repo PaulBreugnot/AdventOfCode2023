@@ -1,1 +1,1 @@
-add_executable(solve main.cpp)
+add_executable(day1 main.cpp)
