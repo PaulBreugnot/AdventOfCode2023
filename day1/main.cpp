@@ -62,33 +62,33 @@ void part2(char* input_file) {
 	std::ifstream input(input_file);
 	int i = 0;
 	for(std::string line ; std::getline(input, line);) {
-		char count[2];
+		char count[2] = {'0', '0'};
 		auto it = line.begin();
-		int digit = match(line, it);
-		while(it != line.end() && !std::isdigit(*it) && digit == 0) {
-			it++;
-			digit = match(line, it);
-		}
-		if(it != line.end()) {
-			if(std::isdigit(*it))
+		while(it != line.end() && count[0] == '0') {
+			if(std::isdigit(*it)) {
 				count[0] = *it;
-			else
-				count[0] = std::to_string(digit).c_str()[0];
+			} else {
+				int digit = match(line, it);
+				if(digit != 0) {
+					count[0] = std::to_string(digit)[0];
+				}
+			}
+			++it;
 		}
 
 		auto rit = line.rbegin();
-		digit = rmatch(line, rit);
-		while(rit != line.rend() && !std::isdigit(*rit) && digit == 0) {
-			rit++;
-			digit = rmatch(line, rit);
-		}
-		if(rit != line.rend()) {
-			if(std::isdigit(*rit))
+		while(rit != line.rend() && count[1] == '0') {
+			if(std::isdigit(*rit)) {
 				count[1] = *rit;
-			else
-				count[1] = std::to_string(digit).c_str()[0];
+			} else {
+				int digit = rmatch(line, rit);
+				if(digit != 0) {
+					count[1] = std::to_string(digit)[0];
+					break;
+				}
+			}
+			rit++;
 		}
-		//std::cout << line << " - " << count[0] << count[1] << std::endl;
 		i += std::stoi(count);
 	}
 	std::cout << "Part 2: " << i << std::endl;
