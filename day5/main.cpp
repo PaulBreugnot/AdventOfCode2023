@@ -1,9 +1,11 @@
 #include "day5.h"
 #include <algorithm>
+#include <set>
 
 void part1(char* input_file) {
 	Almanac almanac = parse(input_file);
-	std::vector<unsigned long> locations;
+	std::set<unsigned long> locations;
+	//almanac.seeds = {1224711373};
 	for(auto seed : almanac.seeds) {
 		std::cout << "Seed " << seed << std::endl;
 		unsigned long soil = almanac.seed_to_soil.value(seed);
@@ -20,8 +22,10 @@ void part1(char* input_file) {
 		std::cout << "  Humidity: " << humidity << std::endl;
 		unsigned long location = almanac.humidity_to_location.value(humidity);
 		std::cout << "  Location: " << location << std::endl;
-		locations.push_back(location);
+		locations.insert(location);
 	}
+	for(auto& item : locations)
+		std::cout << item << std::endl;
 	std::cout << "Part 1: " << *std::min_element(locations.begin(), locations.end()) << std::endl;
 }
 
