@@ -1,7 +1,9 @@
 #include "gmock/gmock.h"
 #include "day5.h"
 
-using namespace testing;
+using testing::Eq;
+using testing::ElementsAre;
+
 // Demonstrate some basic assertions.
 TEST(Day5Test, seed_map) {
 	Map map;
@@ -74,4 +76,61 @@ TEST(Day5Test, water_map) {
 	for(int i = 25+70; i < 25+170; i++) {
 		ASSERT_THAT(map.value(i), Eq(i));
 	}
+}
+
+TEST(Day5Test, range_value_1) {
+	Map map;
+	map.insert(50, 98, 2);
+	map.insert(52, 50, 48);
+	map.fill();
+	map.print();
+
+	auto ranges = map.values({20, 30});
+	ASSERT_THAT(ranges, ElementsAre(Range(20, 30)));
+
+	ranges = map.values({100, 100});
+	ASSERT_THAT(ranges, ElementsAre(Range(100, 100)));
+}
+
+TEST(Day5Test, range_value_2) {
+	Map map;
+	map.insert(50, 98, 2);
+	map.insert(52, 50, 48);
+	map.fill();
+	map.print();
+
+	auto ranges = map.values({20, 45});
+	ASSERT_THAT(ranges, ElementsAre(
+				Range(20, 30),
+				Range(52, 15)
+				));
+
+	ranges = map.values({98, 100});
+	ASSERT_THAT(ranges, ElementsAre(
+				Range(50, 2),
+				Range(100, 98)
+				));
+}
+
+TEST(Day5Test, range_value_3) {
+	Map map;
+	map.insert(0, 15, 37);
+	map.insert(37, 52, 2);
+	map.insert(39, 0, 15);
+	map.fill();
+	
+	auto ranges = map.values({10, 43});
+	ASSERT_THAT(ranges, ElementsAre(
+				Range(49, 5),
+				Range(0, 37),
+				Range(37, 1)
+				));
+
+	ranges = map.values({10, 50});
+	ASSERT_THAT(ranges, ElementsAre(
+				Range(49, 5),
+				Range(0, 37),
+				Range(37, 2),
+				Range(54, 6)
+				));
 }

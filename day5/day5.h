@@ -3,14 +3,25 @@
 #include <iostream>
 #include <vector>
 #include <cassert>
+#include <list>
 
-typedef std::pair<unsigned long, unsigned long> Range;
+struct Range {
+	unsigned long begin;
+	unsigned long size;
+
+	Range(const unsigned long& begin, const unsigned long& size)
+		: begin(begin), size(size) {
+		}
+};
+
+bool operator==(const Range& r1, const Range& r2);
+std::ostream& operator<<(std::ostream& s, const Range& r);
 
 struct Compare {
 	bool operator()(
 			const Range& p1,
 			const Range& p2) const {
-		return p1.first < p2.first;
+		return p1.begin < p2.begin;
 	}
 };
 
@@ -44,14 +55,16 @@ class Map {
 		unsigned long value(unsigned long key) const {
 			auto it = contains(key);
 			if(it != map.end()) {
-				return key - it->first.first + it->second;
+				return key - it->first.begin + it->second;
 			}
 			return key;
 		}
+		
+		std::list<Range> values(const Range& range) const;
 
 		void print() const {
 			for(auto item : map) {
-				std::cout << item.first.first << " (" << item.first.second << "), ";
+				std::cout << item.first.begin << " (" << item.first.size << "), ";
 			}
 			std::cout << std::endl;
 			for(auto item : map) {
@@ -64,8 +77,8 @@ class Map {
 			{
 				auto end = *map.rbegin();
 				map.insert({
-						{end.first.first + end.first.second, -1},
-						end.first.first + end.first.second
+						{end.first.begin + end.first.size, (unsigned long) -1},
+						end.first.begin + end.first.size
 						});
 			}
 
@@ -74,16 +87,16 @@ class Map {
 			--end;--end;
 			std::vector<std::pair<Range, unsigned long>> items_to_add;
 			while(it != end) {
-				unsigned long begin = it->first.first;
-				unsigned long size = it->first.second;
+				unsigned long begin = it->first.begin;
+				unsigned long size = it->first.size;
 				unsigned long current = begin + size;
-				unsigned long expected = (++it)->first.first;
+				unsigned long expected = (++it)->first.begin;
 				if(current != expected) {
 					items_to_add.push_back({{current, expected-current}, current});
 				}
 			}
 			for(auto item : items_to_add) {
-				insert(item.second, item.first.first, item.first.second);
+				insert(item.second, item.first.begin, item.first.begin);
 			}
 		}
 
@@ -92,10 +105,10 @@ class Map {
 			auto end = map.end();
 			--end;--end;
 			while(it != end) {
-				auto begin = it->first.first;
-				auto size = it->first.second;
+				auto begin = it->first.begin;
+				auto size = it->first.size;
 				auto current = begin + size;
-				auto expected = (++it)->first.first;
+				auto expected = (++it)->first.begin;
 				if(current != expected) {
 					std::cout << "Error at " << begin << "(" << size << ") -> " << expected << " error range = " << expected - current << std::endl;
 					assert(expected > current);

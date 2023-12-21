@@ -4,6 +4,7 @@ enable_testing()
 
 add_executable(
   day5_test
+  day5.cpp
   test.cpp
 )
 target_link_libraries(

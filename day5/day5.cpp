@@ -1,6 +1,14 @@
 #include "day5.h"
 #include <fstream>
 
+bool operator==(const Range& r1, const Range& r2) {
+	return r1.begin == r2.begin && r1.size == r2.size;
+}
+std::ostream& operator<<(std::ostream& s, const Range& r) {
+	s << "(b:" << r.begin << ", s:" << r.size << ")";
+	return s;
+}
+
 Map parse_map(std::vector<std::string>::iterator& line_it) {
 	// Skips header
 	++line_it;
@@ -32,6 +40,56 @@ Map parse_map(std::vector<std::string>::iterator& line_it) {
 		++line_it;
 	}
 	return map;
+}
+
+std::list<Range> Map::values(const Range& range) const {
+	std::list<Range> result;
+	Range current_range = range;
+	do {
+		std::cout << "b: " << current_range.begin << ", s: " << current_range.size << std::endl;
+		auto map_it = contains(current_range.begin);
+		if(map_it == map.end() && current_range.begin < map.begin()->first.begin) {
+			// Value of range before first value of the map
+			if(current_range.begin + current_range.size - 1 < map.begin()->first.begin) {
+				// The range is included before the first value of the map
+				result.push_back(current_range);
+				current_range = {current_range.begin + current_range.size, 0};
+			} else {
+				// Only a part matches the region before the first value of the
+				// map
+				Range result_range = {
+					value(current_range.begin),
+					map.begin()->first.begin - current_range.begin
+				};
+				result.push_back(result_range);
+				current_range = {map.begin()->first.begin, current_range.size - result_range.size};
+			}
+		} else if (map_it == map.end()) {
+			// The range is included after the last value of the map
+			result.push_back(current_range);
+			current_range = {current_range.begin + current_range.size, 0};
+		} else {
+			if(current_range.begin + current_range.size  >=
+					map_it->first.begin + map_it->first.size) {
+					Range result_range = {
+						value(current_range.begin),
+						map_it->first.begin + map_it->first.size - current_range.begin
+					};
+					result.push_back(result_range);
+					current_range = {
+						map_it->first.begin+map_it->first.size,
+						current_range.size - result_range.size
+					};
+			} else {
+				result.push_back({
+						value(current_range.begin),
+						current_range.size
+						});
+				current_range = {current_range.begin + current_range.size, 0};
+			}
+		}
+	} while(current_range.size != 0);
+	return result;
 }
 
 Almanac parse(const char* input_file) {
