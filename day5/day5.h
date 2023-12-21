@@ -4,6 +4,7 @@
 #include <vector>
 #include <cassert>
 #include <list>
+#include <array>
 
 struct Range {
 	unsigned long begin;
@@ -17,19 +18,15 @@ struct Range {
 bool operator==(const Range& r1, const Range& r2);
 std::ostream& operator<<(std::ostream& s, const Range& r);
 
-struct Compare {
-	bool operator()(
-			const Range& p1,
-			const Range& p2) const {
-		return p1.begin < p2.begin;
-	}
-};
+bool operator<(
+		const Range& p1,
+		const Range& p2);
 
 class Map {
 	public:
-		std::map<Range, unsigned long, Compare> map;
+		std::map<Range, unsigned long> map;
 	private:
-		typename std::map<Range, unsigned long, Compare>::const_iterator contains(
+		typename std::map<Range, unsigned long>::const_iterator contains(
 				unsigned long key) const {
 			auto it = map.upper_bound({key, 0});
 			if(it == map.begin())
@@ -96,7 +93,7 @@ class Map {
 				}
 			}
 			for(auto item : items_to_add) {
-				insert(item.second, item.first.begin, item.first.begin);
+				insert(item.second, item.first.begin, item.first.size);
 			}
 		}
 
@@ -120,13 +117,46 @@ class Map {
 
 struct Almanac {
 	std::vector<unsigned long> seeds;
-	Map seed_to_soil;
-	Map soil_to_fertilizer;
-	Map fertilizer_to_water;
-	Map water_to_light;
-	Map light_to_temperature;
-	Map temperature_to_humidity;
-	Map humidity_to_location;
+	std::array<Map, 7> maps;
+
+	Map& seedToSoil() {
+		return maps[0];
+	}
+
+	Map& soilToFertilizer() {
+		return maps[1];
+	}
+
+	Map& fertilizerToWater() {
+		return maps[2];
+	}
+
+	Map& waterToLight() {
+		return maps[3];
+	}
+
+	Map& lightToTemperature() {
+		return maps[4];
+	}
+
+	Map& temperaturToHumidity() {
+		return maps[5];
+	}
+
+	Map& humidityToLocation() {
+		return maps[6];
+	}
+
+	std::list<Range> seedRanges() const {
+		std::list<Range> seed_ranges;
+		auto it = seeds.begin();
+		while(it != seeds.end()) {
+			auto begin = *it++;
+			auto size = *it++;
+			seed_ranges.push_back(Range(begin, size));
+		}
+		return seed_ranges;
+	}
 };
 
 Almanac parse(const char* input_file);

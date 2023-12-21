@@ -9,6 +9,12 @@ std::ostream& operator<<(std::ostream& s, const Range& r) {
 	return s;
 }
 
+bool operator<(
+		const Range& p1,
+		const Range& p2) {
+	return p1.begin < p2.begin;
+}
+
 Map parse_map(std::vector<std::string>::iterator& line_it) {
 	// Skips header
 	++line_it;
@@ -46,7 +52,6 @@ std::list<Range> Map::values(const Range& range) const {
 	std::list<Range> result;
 	Range current_range = range;
 	do {
-		std::cout << "b: " << current_range.begin << ", s: " << current_range.size << std::endl;
 		auto map_it = contains(current_range.begin);
 		if(map_it == map.end() && current_range.begin < map.begin()->first.begin) {
 			// Value of range before first value of the map
@@ -120,46 +125,46 @@ Almanac parse(const char* input_file) {
 	++line_it;
 
 	std::cout << std::endl << "Seed to soil: ";
-	almanac.seed_to_soil = parse_map(++line_it);
-	almanac.seed_to_soil.fill();
-	almanac.seed_to_soil.check();
-	almanac.seed_to_soil.print();
+	almanac.seedToSoil() = parse_map(++line_it);
+	almanac.seedToSoil().fill();
+	almanac.seedToSoil().check();
+	almanac.seedToSoil().print();
 
 	std::cout << std::endl << "Soil to fertilizer: ";
-	almanac.soil_to_fertilizer = parse_map(++line_it);
-	almanac.soil_to_fertilizer.fill();
-	almanac.soil_to_fertilizer.check();
-	almanac.soil_to_fertilizer.print();
+	almanac.soilToFertilizer() = parse_map(++line_it);
+	almanac.soilToFertilizer().fill();
+	almanac.soilToFertilizer().check();
+	almanac.soilToFertilizer().print();
 
 	std::cout << std::endl << "Fertilizer to water: ";
-	almanac.fertilizer_to_water = parse_map(++line_it);
-	almanac.fertilizer_to_water.fill();
-	almanac.fertilizer_to_water.check();
-	almanac.fertilizer_to_water.print();
+	almanac.fertilizerToWater() = parse_map(++line_it);
+	almanac.fertilizerToWater().fill();
+	almanac.fertilizerToWater().check();
+	almanac.fertilizerToWater().print();
 
 	std::cout << std::endl << "Water to light: ";
-	almanac.water_to_light = parse_map(++line_it);
-	almanac.water_to_light.fill();
-	almanac.water_to_light.check();
-	almanac.water_to_light.print();
+	almanac.waterToLight() = parse_map(++line_it);
+	almanac.waterToLight().fill();
+	almanac.waterToLight().check();
+	almanac.waterToLight().print();
 
 	std::cout << std::endl << "Light to temperature: ";
-	almanac.light_to_temperature = parse_map(++line_it);
-	almanac.light_to_temperature.fill();
-	almanac.light_to_temperature.check();
-	almanac.light_to_temperature.print();
+	almanac.lightToTemperature() = parse_map(++line_it);
+	almanac.lightToTemperature().fill();
+	almanac.lightToTemperature().check();
+	almanac.lightToTemperature().print();
 
 	std::cout << std::endl << "Temperature to humidity: ";
-	almanac.temperature_to_humidity = parse_map(++line_it);
-	almanac.temperature_to_humidity.fill();
-	almanac.temperature_to_humidity.check();
-	almanac.temperature_to_humidity.print();
+	almanac.temperaturToHumidity() = parse_map(++line_it);
+	almanac.temperaturToHumidity().fill();
+	almanac.temperaturToHumidity().check();
+	almanac.temperaturToHumidity().print();
 
 	std::cout << std::endl << "Humidity to location: ";
-	almanac.humidity_to_location = parse_map(++line_it);
-	almanac.humidity_to_location.fill();
-	almanac.humidity_to_location.check();
-	almanac.humidity_to_location.print();
+	almanac.humidityToLocation() = parse_map(++line_it);
+	almanac.humidityToLocation().fill();
+	almanac.humidityToLocation().check();
+	almanac.humidityToLocation().print();
 
 	return almanac;
 }
